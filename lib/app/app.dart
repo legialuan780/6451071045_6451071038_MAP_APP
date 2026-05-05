@@ -19,13 +19,20 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           scaffoldBackgroundColor: Colors.white,
           canvasColor: Colors.white,
+          textTheme: ThemeData.light().textTheme.apply(
+                fontSizeFactor: settingsController.textScaleFactor,
+              ),
           appBarTheme: const AppBarTheme(
             backgroundColor: Colors.white,
             elevation: 0,
             foregroundColor: Colors.black,
           ),
         ),
-        darkTheme: ThemeData.dark(),
+        darkTheme: ThemeData.dark().copyWith(
+          textTheme: ThemeData.dark().textTheme.apply(
+                fontSizeFactor: settingsController.textScaleFactor,
+              ),
+        ),
         initialRoute: AppRoutes.splash,
         routes: AppRoutes.routes,
       );

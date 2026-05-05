@@ -7,15 +7,15 @@ class UpdateAccountScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('C?p nh?t t?i kho?n')),
+      appBar: AppBar(title: const Text('Cập nhật tài khoản')),
       body: ListView(
         children: [
-          ListTile(title: const Text('??i t?n'), onTap: () => Navigator.pushNamed(context, AppRoutes.changeName)),
-          ListTile(title: const Text('??i username'), onTap: () => Navigator.pushNamed(context, AppRoutes.changeUsername)),
-          ListTile(title: const Text('??i email'), onTap: () => Navigator.pushNamed(context, AppRoutes.changeEmail)),
+          ListTile(title: const Text('Đổi tên'), onTap: () => Navigator.pushNamed(context, AppRoutes.changeName)),
+          ListTile(title: const Text('Đổi username'), onTap: () => Navigator.pushNamed(context, AppRoutes.changeUsername)),
+          ListTile(title: const Text('Đổi email'), onTap: () => Navigator.pushNamed(context, AppRoutes.changeEmail)),
           ListTile(title: const Text('Đổi số điện thoại'), onTap: () => Navigator.pushNamed(context, AppRoutes.changePhoneNumber)),
-          ListTile(title: const Text('??i gi?i t?nh'), onTap: () => Navigator.pushNamed(context, AppRoutes.changeGender)),
-          ListTile(title: const Text('??i ng?y sinh'), onTap: () => Navigator.pushNamed(context, AppRoutes.changeDateofBirth)),
+          ListTile(title: const Text('Đổi giới tính'), onTap: () => Navigator.pushNamed(context, AppRoutes.changeGender)),
+          ListTile(title: const Text('Đổi ngày sinh'), onTap: () => Navigator.pushNamed(context, AppRoutes.changeDateofBirth)),
         ],
       ),
     );

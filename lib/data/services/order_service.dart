@@ -40,4 +40,10 @@ class OrderService {
     _orders.insert(0, order);
     return order;
   }
+
+  void updateOrderStatus(String orderId, String newStatus) {
+    final int index = _orders.indexWhere((e) => e.id == orderId);
+    if (index < 0) return;
+    _orders[index] = _orders[index].copyWith(status: newStatus);
+  }
 }

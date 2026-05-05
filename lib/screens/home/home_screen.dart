@@ -6,7 +6,6 @@ import '../../common/widgets/product_card.dart';
 import '../../controller/cart_controller.dart';
 import '../../controller/category_controller.dart';
 import '../../controller/login_controller.dart';
-import '../../controller/main_navigation_controller.dart';
 import '../../controller/notification_controller.dart';
 import '../../controller/product_controller.dart';
 import '../../controller/wishlist_controller.dart';
@@ -29,8 +28,6 @@ class _HomeScreenState extends State<HomeScreen> {
       Get.find<NotificationController>();
   final CartController cartController = Get.find<CartController>();
   final WishlistController wishlistController = Get.find<WishlistController>();
-  final MainNavigationController navigationController =
-      Get.find<MainNavigationController>();
   final AuthController authController = Get.find<AuthController>();
   String keyword = '';
   String selectedCategoryId = 'all';
@@ -284,8 +281,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                             },
                             onToggleFavorite: () {
+                              final wasFavorite = wishlistController.items
+                                  .any((e) => e.id == product.id);
                               wishlistController.toggle(product);
-                              navigationController.setIndex(2);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    wasFavorite
+                                        ? 'Đã bỏ ${product.name} khỏi wishlist'
+                                        : 'Đã thêm ${product.name} vào wishlist',
+                                  ),
+                                ),
+                              );
                             },
                             onAddToCart: () {
                               cartController.addItem(

@@ -6,6 +6,7 @@ class PreferencesHelper {
   static const String themeKey = 'app_theme';
   static const String fontSizeKey = 'font_size';
   static const String languageKey = 'language';
+  static const String notificationEnabledKey = 'notification_enabled';
 
   static Future<void> saveRememberMe(bool rememberMe, String email) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -55,5 +56,23 @@ class PreferencesHelper {
   static Future<String> getLanguage() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(languageKey) ?? 'vi';
+  }
+
+  static Future<void> setNotificationEnabled(bool value) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(notificationEnabledKey, value);
+  }
+
+  static Future<bool> getNotificationEnabled() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(notificationEnabledKey) ?? true;
+  }
+
+  static Future<void> resetAppSettings() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove(themeKey);
+    await prefs.remove(fontSizeKey);
+    await prefs.remove(languageKey);
+    await prefs.remove(notificationEnabledKey);
   }
 }

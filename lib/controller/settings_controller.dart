@@ -6,6 +6,18 @@ class SettingsController extends GetxController {
   final Rx<ThemeMode> themeMode = ThemeMode.system.obs;
   final RxString fontSize = 'medium'.obs;
   final Rx<Locale> locale = const Locale('vi').obs;
+  final RxBool notificationEnabled = true.obs;
+
+  double get textScaleFactor {
+    switch (fontSize.value) {
+      case 'small':
+        return 0.9;
+      case 'large':
+        return 1.2;
+      default:
+        return 1.0;
+    }
+  }
 
   @override
   void onInit() {
@@ -26,6 +38,7 @@ class SettingsController extends GetxController {
     fontSize.value = await PreferencesHelper.getFontSize();
     final String lang = await PreferencesHelper.getLanguage();
     locale.value = Locale(lang);
+    notificationEnabled.value = await PreferencesHelper.getNotificationEnabled();
     Get.updateLocale(locale.value);
   }
 
@@ -48,6 +61,20 @@ class SettingsController extends GetxController {
   Future<void> changeLanguage(String value) async {
     await PreferencesHelper.setLanguage(value);
     locale.value = Locale(value);
+    Get.updateLocale(locale.value);
+  }
+
+  Future<void> changeNotificationEnabled(bool value) async {
+    await PreferencesHelper.setNotificationEnabled(value);
+    notificationEnabled.value = value;
+  }
+
+  Future<void> resetToDefault() async {
+    await PreferencesHelper.resetAppSettings();
+    themeMode.value = ThemeMode.system;
+    fontSize.value = 'medium';
+    locale.value = const Locale('vi');
+    notificationEnabled.value = true;
     Get.updateLocale(locale.value);
   }
 }
