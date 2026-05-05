@@ -53,7 +53,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
             BottomNavigationBarItem(
               icon: Icon(Icons.business),
-              label: 'My store',
+              label: 'Store',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.favorite_border),

@@ -13,4 +13,8 @@ class WishlistService {
       _wishlist.add(product);
     }
   }
+
+  void clearAll() {
+    _wishlist.clear();
+  }
 }

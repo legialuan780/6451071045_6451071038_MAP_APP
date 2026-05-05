@@ -14,4 +14,19 @@ class OrderModel {
     required this.status,
     required this.createdAt,
   });
+
+  OrderModel copyWith({
+    List<CartItemModel>? items,
+    double? total,
+    String? status,
+    DateTime? createdAt,
+  }) {
+    return OrderModel(
+      id: id,
+      items: items ?? this.items,
+      total: total ?? this.total,
+      status: status ?? this.status,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
 }

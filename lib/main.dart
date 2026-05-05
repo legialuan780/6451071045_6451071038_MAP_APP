@@ -10,6 +10,7 @@ import 'controller/notification_controller.dart';
 import 'controller/order_controller.dart';
 import 'controller/product_controller.dart';
 import 'controller/settings_controller.dart';
+import 'controller/update_account_controller.dart';
 import 'controller/wishlist_controller.dart';
 import 'firebase_options.dart';
 
@@ -25,6 +26,7 @@ void main() async {
   Get.put(OrderController());
   Get.put(WishlistController());
   Get.put(SettingsController());
+  Get.put(UpdateAccountController());
   Get.put(ProductController());
   Get.put(AllBrandController());
   Get.put(MainNavigationController());

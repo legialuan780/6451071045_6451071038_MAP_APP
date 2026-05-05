@@ -186,6 +186,18 @@ class ProfileScreen extends StatelessWidget {
             subtitle: controller.locale.value.languageCode,
             onTap: () => _showLanguageDialog(controller),
           ),
+          ProfileMenuItem(
+            icon: Icons.notifications_active,
+            title: 'Thông báo ứng dụng',
+            subtitle: controller.notificationEnabled.value ? 'Đang bật' : 'Đang tắt',
+            onTap: () => _showNotificationDialog(controller),
+          ),
+          ProfileMenuItem(
+            icon: Icons.restore,
+            title: 'Khôi phục cài đặt mặc định',
+            subtitle: 'Đưa giao diện về cài đặt ban đầu',
+            onTap: () => _showResetSettingsDialog(controller),
+          ),
         ],
       ),
     );
@@ -359,5 +371,48 @@ void _showLanguageDialog(SettingsController controller) {
         ),
       ],
     ),
+  );
+}
+
+void _showNotificationDialog(SettingsController controller) {
+  Get.defaultDialog(
+    title: 'Thông báo',
+    content: Column(
+      children: [
+        ListTile(
+          title: const Text('Bật thông báo'),
+          onTap: () {
+            controller.changeNotificationEnabled(true);
+            Get.back();
+          },
+        ),
+        ListTile(
+          title: const Text('Tắt thông báo'),
+          onTap: () {
+            controller.changeNotificationEnabled(false);
+            Get.back();
+          },
+        ),
+      ],
+    ),
+  );
+}
+
+void _showResetSettingsDialog(SettingsController controller) {
+  Get.defaultDialog(
+    title: 'Khôi phục mặc định',
+    middleText: 'Bạn có chắc muốn đặt lại tất cả cài đặt ứng dụng?',
+    textCancel: 'Hủy',
+    textConfirm: 'Đồng ý',
+    confirmTextColor: Colors.white,
+    onConfirm: () async {
+      await controller.resetToDefault();
+      Get.back();
+      Get.snackbar(
+        'Thành công',
+        'Đã khôi phục cài đặt mặc định',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    },
   );
 }

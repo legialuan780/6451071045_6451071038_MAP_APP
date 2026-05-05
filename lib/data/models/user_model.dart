@@ -5,6 +5,8 @@ class UserModel {
   final String username;
   final String email;
   final String phone;
+  final String gender;
+  final String dateOfBirth;
 
   const UserModel({
     required this.id,
@@ -13,6 +15,8 @@ class UserModel {
     required this.username,
     required this.email,
     required this.phone,
+    this.gender = '',
+    this.dateOfBirth = '',
   });
 
   Map<String, dynamic> toMap() {
@@ -23,6 +27,8 @@ class UserModel {
       'username': username,
       'email': email,
       'phone': phone,
+      'gender': gender,
+      'dateOfBirth': dateOfBirth,
     };
   }
 
@@ -34,6 +40,29 @@ class UserModel {
       username: map['username'] as String? ?? '',
       email: map['email'] as String? ?? '',
       phone: map['phone'] as String? ?? '',
+      gender: map['gender'] as String? ?? '',
+      dateOfBirth: map['dateOfBirth'] as String? ?? '',
+    );
+  }
+
+  UserModel copyWith({
+    String? firstName,
+    String? lastName,
+    String? username,
+    String? email,
+    String? phone,
+    String? gender,
+    String? dateOfBirth,
+  }) {
+    return UserModel(
+      id: id,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      username: username ?? this.username,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      gender: gender ?? this.gender,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
     );
   }
 }

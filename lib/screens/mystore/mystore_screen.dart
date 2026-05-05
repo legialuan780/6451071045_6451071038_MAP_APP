@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../common/widgets/product_card.dart';
 import '../../controller/cart_controller.dart';
-import '../../controller/main_navigation_controller.dart';
 import '../../controller/mystore_controller.dart';
 import '../../controller/wishlist_controller.dart';
 import '../../data/models/cart_item_model.dart';
@@ -21,8 +20,6 @@ class _MystoreScreenState extends State<MystoreScreen> {
   final MystoreController controller = Get.put(MystoreController());
   final CartController cartController = Get.find<CartController>();
   final WishlistController wishlistController = Get.find<WishlistController>();
-  final MainNavigationController navigationController =
-      Get.find<MainNavigationController>();
   String keyword = '';
   String selectedCategory = 'all';
 
@@ -32,7 +29,7 @@ class _MystoreScreenState extends State<MystoreScreen> {
       backgroundColor: const Color(0xFFF4F7FA),
       appBar: AppBar(
         title: const Text(
-          'Cửa hàng của chúng tôi',
+          'Cửa hàng',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 24),
         ),
       ),
@@ -151,8 +148,17 @@ class _MystoreScreenState extends State<MystoreScreen> {
                         product: product,
                         isFavorite: isFavorite,
                         onToggleFavorite: () {
+                          final wasFavorite = wishlistController.contains(product.id);
                           wishlistController.toggle(product);
-                          navigationController.setIndex(2);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                wasFavorite
+                                    ? 'Đã bỏ ${product.name} khỏi wishlist'
+                                    : 'Đã thêm ${product.name} vào wishlist',
+                              ),
+                            ),
+                          );
                         },
                         onAddToCart: () {
                           cartController.addItem(

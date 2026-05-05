@@ -16,4 +16,13 @@ class WishlistController extends GetxController {
     _service.toggle(product);
     items.assignAll(_service.getAll());
   }
+
+  bool contains(String productId) {
+    return items.any((e) => e.id == productId);
+  }
+
+  void clearAll() {
+    _service.clearAll();
+    items.assignAll(_service.getAll());
+  }
 }

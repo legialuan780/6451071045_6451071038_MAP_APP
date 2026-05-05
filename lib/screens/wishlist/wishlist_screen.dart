@@ -6,8 +6,16 @@ import '../../controller/wishlist_controller.dart';
 import '../../data/models/cart_item_model.dart';
 import '../../routes/app_routes.dart';
 
-class WishlistScreen extends StatelessWidget {
+class WishlistScreen extends StatefulWidget {
   const WishlistScreen({super.key});
+
+  @override
+  State<WishlistScreen> createState() => _WishlistScreenState();
+}
+
+class _WishlistScreenState extends State<WishlistScreen> {
+  String query = '';
+  String sortMode = 'newest';
 
   @override
   Widget build(BuildContext context) {
@@ -60,46 +68,119 @@ class WishlistScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Danh sách yêu thích')),
       body: Obx(
         () {
+          final filtered = controller.items
+              .where((e) => query.isEmpty ? true : e.name.toLowerCase().contains(query.toLowerCase()))
+              .toList();
+          if (sortMode == 'price_asc') {
+            filtered.sort((a, b) => a.price.compareTo(b.price));
+          } else if (sortMode == 'price_desc') {
+            filtered.sort((a, b) => b.price.compareTo(a.price));
+          } else {
+            filtered.sort((a, b) => b.id.compareTo(a.id));
+          }
+
           if (controller.items.isEmpty) {
             return const Center(child: Text('Bạn chưa có sản phẩm yêu thích'));
           }
-          return ListView(
-            children: controller.items.map((e) {
-              return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                child: ListTile(
-                  leading: const Icon(Icons.favorite, color: Colors.red),
-                  title: Text(e.name),
-                  subtitle: Text('${e.price.toStringAsFixed(0)} đ'),
-                  trailing: Wrap(
-                    spacing: 8,
-                    children: [
-                      IconButton(
-                        tooltip: 'Thêm vào giỏ',
-                        onPressed: () {
-                          cartController.addItem(
-                            CartItemModel(
-                              productId: e.id,
-                              name: e.name,
-                              price: e.price,
-                            ),
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Đã thêm ${e.name} vào giỏ hàng')),
-                          );
-                        },
-                        icon: const Icon(Icons.add_shopping_cart),
-                      ),
-                      IconButton(
-                        tooltip: 'Bỏ yêu thích',
-                        onPressed: () => controller.toggle(e),
-                        icon: const Icon(Icons.delete_outline),
-                      ),
-                    ],
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+                child: TextField(
+                  onChanged: (value) => setState(() => query = value.trim()),
+                  decoration: const InputDecoration(
+                    hintText: 'Tìm trong wishlist',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.search),
                   ),
                 ),
-              );
-            }).toList(),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Row(
+                  children: [
+                    DropdownButton<String>(
+                      value: sortMode,
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() => sortMode = value);
+                        }
+                      },
+                      items: const [
+                        DropdownMenuItem(value: 'newest', child: Text('Mới thêm')),
+                        DropdownMenuItem(value: 'price_asc', child: Text('Giá tăng dần')),
+                        DropdownMenuItem(value: 'price_desc', child: Text('Giá giảm dần')),
+                      ],
+                    ),
+                    const Spacer(),
+                    TextButton(
+                      onPressed: () {
+                        for (final e in controller.items) {
+                          cartController.addItem(
+                            CartItemModel(productId: e.id, name: e.name, price: e.price),
+                          );
+                        }
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Đã thêm tất cả vào giỏ hàng')),
+                        );
+                      },
+                      child: const Text('Thêm tất cả vào giỏ'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        controller.clearAll();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Đã xóa toàn bộ wishlist')),
+                        );
+                      },
+                      child: const Text('Xóa tất cả'),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: filtered.isEmpty
+                    ? const Center(child: Text('Không tìm thấy sản phẩm yêu thích'))
+                    : ListView(
+                        children: filtered.map((e) {
+                          return Card(
+                            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            child: ListTile(
+                              leading: const Icon(Icons.favorite, color: Colors.red),
+                              title: Text(e.name),
+                              subtitle: Text('${e.price.toStringAsFixed(0)} đ'),
+                              trailing: Wrap(
+                                spacing: 8,
+                                children: [
+                                  IconButton(
+                                    tooltip: 'Thêm vào giỏ',
+                                    onPressed: () {
+                                      cartController.addItem(
+                                        CartItemModel(
+                                          productId: e.id,
+                                          name: e.name,
+                                          price: e.price,
+                                        ),
+                                      );
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Đã thêm ${e.name} vào giỏ hàng')),
+                                      );
+                                    },
+                                    icon: const Icon(Icons.add_shopping_cart),
+                                  ),
+                                  IconButton(
+                                    tooltip: 'Bỏ yêu thích',
+                                    onPressed: () => controller.toggle(e),
+                                    icon: const Icon(Icons.delete_outline),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+              ),
+            ],
           );
         },
       ),

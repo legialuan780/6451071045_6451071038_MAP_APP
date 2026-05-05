@@ -3,10 +3,8 @@ import 'package:get/get.dart';
 import '../../common/widgets/product_card.dart';
 import '../../controller/brand_controller.dart';
 import '../../controller/cart_controller.dart';
-import '../../controller/main_navigation_controller.dart';
 import '../../controller/wishlist_controller.dart';
 import '../../data/models/cart_item_model.dart';
-import '../home/main_navigation_screen.dart';
 
 class BrandDetailScreen extends StatefulWidget {
   final String brandId;
@@ -21,8 +19,7 @@ class _BrandDetailScreenState extends State<BrandDetailScreen> {
   late AllBrandController controller;
   final CartController cartController = Get.find<CartController>();
   final WishlistController wishlistController = Get.find<WishlistController>();
-  final MainNavigationController navigationController =
-      Get.find<MainNavigationController>();
+  String keyword = '';
 
   final Map<String, String> filterMap = const {
     'Tên A-Z': 'name',
@@ -42,8 +39,16 @@ class _BrandDetailScreenState extends State<BrandDetailScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(widget.brandName)),
       body: Obx(
-        () => Column(
-          children: [
+        () {
+          final filteredProducts = controller.brandProducts
+              .where(
+                (p) => keyword.isEmpty
+                    ? true
+                    : p.name.toLowerCase().contains(keyword.toLowerCase()),
+              )
+              .toList();
+          return Column(
+            children: [
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.all(12),
@@ -61,10 +66,21 @@ class _BrandDetailScreenState extends State<BrandDetailScreen> {
                 }).toList(),
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: TextField(
+                onChanged: (value) => setState(() => keyword = value.trim()),
+                decoration: const InputDecoration(
+                  hintText: 'Tìm sản phẩm theo tên',
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
             Expanded(
               child: GridView.builder(
                 padding: const EdgeInsets.all(16),
-                itemCount: controller.brandProducts.length,
+                itemCount: filteredProducts.length,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 12,
@@ -72,7 +88,7 @@ class _BrandDetailScreenState extends State<BrandDetailScreen> {
                   childAspectRatio: 0.65,
                 ),
                 itemBuilder: (_, i) {
-                  final product = controller.brandProducts[i];
+                  final product = filteredProducts[i];
                   final bool isFavorite = wishlistController.items.any(
                     (e) => e.id == product.id,
                   );
@@ -80,11 +96,15 @@ class _BrandDetailScreenState extends State<BrandDetailScreen> {
                     product: product,
                     isFavorite: isFavorite,
                     onToggleFavorite: () {
+                      final wasFavorite = wishlistController.contains(product.id);
                       wishlistController.toggle(product);
-                      navigationController.setIndex(2);
-                      Get.offAll(
-                        () => const MainNavigationScreen.withIndex(
-                          initialIndex: 2,
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            wasFavorite
+                                ? 'Đã bỏ ${product.name} khỏi wishlist'
+                                : 'Đã thêm ${product.name} vào wishlist',
+                          ),
                         ),
                       );
                     },
@@ -105,7 +125,8 @@ class _BrandDetailScreenState extends State<BrandDetailScreen> {
               ),
             ),
           ],
-        ),
+        );
+        },
       ),
     );
   }
