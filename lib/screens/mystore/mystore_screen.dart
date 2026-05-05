@@ -1,4 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../common/widgets/product_card.dart';
+import '../../controller/cart_controller.dart';
+import '../../controller/main_navigation_controller.dart';
+import '../../controller/mystore_controller.dart';
+import '../../controller/wishlist_controller.dart';
+import '../../data/models/cart_item_model.dart';
+import '../../data/models/product_model.dart';
+import 'all_brand_screen.dart';
+import 'brand_detail_screen.dart';
 
 class MystoreScreen extends StatefulWidget {
   const MystoreScreen({super.key});
@@ -8,277 +18,166 @@ class MystoreScreen extends StatefulWidget {
 }
 
 class _MystoreScreenState extends State<MystoreScreen> {
-int selectedCategoryIndex = 0;
-/// ===== MOCK DATA =====
-final List<String> categories = [
-"Tất cả",
-"Điện tử",
-"Thời trang",
-"Gia dụng",
-"Mỹ phẩm",
-];
+  final MystoreController controller = Get.put(MystoreController());
+  final CartController cartController = Get.find<CartController>();
+  final WishlistController wishlistController = Get.find<WishlistController>();
+  final MainNavigationController navigationController =
+      Get.find<MainNavigationController>();
+  String keyword = '';
+  String selectedCategory = 'all';
 
-final List<String> brands = ["Nike", "Adidas", "Apple", "Samsung"];
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF4F7FA),
+      appBar: AppBar(
+        title: const Text(
+          'Cửa hàng của chúng tôi',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 24),
+        ),
+      ),
+      body: Obx(
+        () {
+          final List<ProductModel> filtered = controller.products
+              .where(
+                (p) => keyword.isEmpty
+                    ? true
+                    : p.name.toLowerCase().contains(keyword.toLowerCase()),
+              )
+              .where(
+                (p) => selectedCategory == 'all'
+                    ? true
+                    : p.categoryId == selectedCategory,
+              )
+              .toList();
 
-@override
-Widget build(BuildContext context) {
-return Scaffold(
-backgroundColor: const Color(0xFFF4F7FA),
-
-/// ===== APPBAR =====
-appBar: AppBar(
-title: const Text(
-"Cửa hàng của chúng tôi",
-style: TextStyle(
-color: Colors.black,
-fontWeight: FontWeight.bold,
-fontSize: 24,
-),
-),
-elevation: 0,
-backgroundColor: Colors.transparent,
-actions: [
-IconButton(
-onPressed: () {},
-icon: const Icon(Icons.search_rounded, color: Colors.black87),
-),
-IconButton(
-onPressed: () {},
-icon: const Icon(Icons.notifications_none_rounded),
-),
-],
-),
-
-/// ===== BODY =====
-body: CustomScrollView(
-physics: const BouncingScrollPhysics(),
-slivers: [
-_buildSectionTitle("Các thương hiệu nổi bật"),
-_buildFeaturedBrands(),
-
-_buildCategoryTabs(),
-
-_buildSectionTitle("Thương hiệu trong danh mục"),
-_buildBrandBanner(),
-
-_buildSectionTitle("Bạn có thể quan tâm"),
-_buildProductGrid(),
-],
-),
-);
-}
-
-/// ===== SECTION TITLE =====
-Widget _buildSectionTitle(String title) {
-return SliverToBoxAdapter(
-child: Padding(
-padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-child: Text(
-title,
-style: const TextStyle(
-fontSize: 18,
-fontWeight: FontWeight.bold,
-color: Color(0xFF2D3142),
-),
-),
-),
-);
-}
-
-/// ===== FEATURED BRANDS =====
-Widget _buildFeaturedBrands() {
-return SliverToBoxAdapter(
-child: SizedBox(
-height: 110,
-child: ListView.builder(
-scrollDirection: Axis.horizontal,
-padding: const EdgeInsets.symmetric(horizontal: 10),
-itemCount: brands.length,
-itemBuilder: (_, index) {
-return Container(
-width: 100,
-margin: const EdgeInsets.all(10),
-decoration: BoxDecoration(
-color: Colors.white,
-borderRadius: BorderRadius.circular(20),
-boxShadow: [
-BoxShadow(
-color: Colors.blueAccent.withOpacity(0.08),
-blurRadius: 15,
-offset: const Offset(0, 8),
-),
-],
-),
-child: Column(
-mainAxisAlignment: MainAxisAlignment.center,
-children: [
-const CircleAvatar(backgroundColor: Colors.blue, radius:
-20),
-const SizedBox(height: 8),
-Text(brands[index], style: const TextStyle(fontSize: 12)),
-],
-),
-);
-},
-),
-),
-);
-}
-
-/// ===== CATEGORY TABS =====
-Widget _buildCategoryTabs() {
-return SliverPersistentHeader(
-pinned: true,
-delegate: _SliverAppBarDelegate(
-minHeight: 70,
-maxHeight: 70,
-child: Container(
-color: const Color(0xFFF4F7FA),
-child: ListView.builder(
-scrollDirection: Axis.horizontal,
-padding: const EdgeInsets.symmetric(horizontal: 10),
-itemCount: categories.length,
-itemBuilder: (_, index) {
-final isSelected = selectedCategoryIndex == index;
-
-return GestureDetector(
-onTap: () {
-setState(() {
-selectedCategoryIndex = index;
-});
-},
-child: AnimatedContainer(
-duration: const Duration(milliseconds: 250),
-margin: const EdgeInsets.symmetric(
-horizontal: 6,
-vertical: 12,
-),
-padding: const EdgeInsets.symmetric(horizontal: 20),
-decoration: BoxDecoration(
-gradient: isSelected
-? const LinearGradient(
-colors: [Color(0xFF4960F9), Color(0xFF1937FE)],
-)
-: null,
-color: isSelected ? null : Colors.white,
-borderRadius: BorderRadius.circular(15),
-),
-child: Center(
-child: Text(
-categories[index],
-style: TextStyle(
-color: isSelected ? Colors.white : Colors.blueGrey,
-fontWeight: isSelected
-? FontWeight.bold
-: FontWeight.normal,
-),
-),
-),
-),
-);
-},
-),
-),
-),
-);
-}
-
-/// ===== BRAND BANNER =====
-Widget _buildBrandBanner() {
-return SliverToBoxAdapter(
-child: Column(
-children: brands.map((brand) {
-return Container(
-margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-padding: const EdgeInsets.all(20),
-decoration: BoxDecoration(
-gradient: const LinearGradient(
-colors: [Color(0xFF2D3142), Color(0xFF4F5D75)],
-),
-borderRadius: BorderRadius.circular(20),
-),
-child: Row(
-children: [
-const Icon(Icons.store, color: Colors.white),
-const SizedBox(width: 12),
-Expanded(
-child: Text(
-brand,
-style: const TextStyle(color: Colors.white),
-),
-),
-ElevatedButton(onPressed: () {}, child: const Text("Theo dõi")),
-  ],
-),
-);
-}).toList(),
-),
-);
-}
-
-/// ===== PRODUCT GRID =====
-Widget _buildProductGrid() {
-  return SliverPadding(
-    padding: const EdgeInsets.all(20),
-    sliver: SliverGrid(
-      delegate: SliverChildBuilderDelegate((_, index) {
-        return Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: Colors.white,
-          ),
-          child: Column(
-            children: [
-              Expanded(
-                child: Container(
-                  color: Colors.grey[300],
-                  child: const Center(child: Text("Image")),
+          return CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                  child: TextField(
+                    onChanged: (value) => setState(() => keyword = value),
+                    decoration: const InputDecoration(
+                      hintText: 'Tìm sản phẩm hoặc nhãn hàng',
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(height: 8),
-              const Text("Product"),
-              const SizedBox(height: 4),
-              const Text("\$99"),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                  child: Wrap(
+                    spacing: 8,
+                    children: [
+                      ChoiceChip(
+                        label: const Text('Tất cả'),
+                        selected: selectedCategory == 'all',
+                        onSelected: (_) => setState(() => selectedCategory = 'all'),
+                      ),
+                      ...controller.categories.map(
+                        (c) => ChoiceChip(
+                          label: Text(c.name),
+                          selected: selectedCategory == c.id,
+                          onSelected: (_) => setState(() => selectedCategory = c.id),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                  child: Row(
+                    children: [
+                      const Text(
+                        'Các thương hiệu nổi bật',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      const Spacer(),
+                      TextButton(
+                        onPressed: () => Get.to(() => AllBrandScreen()),
+                        child: const Text('Xem tất cả'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: SizedBox(
+                  height: 100,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: controller.featuredBrands.length,
+                    itemBuilder: (_, i) {
+                      final b = controller.featuredBrands[i];
+                      return GestureDetector(
+                        onTap: () => Get.to(
+                          () => BrandDetailScreen(brandId: b.id, brandName: b.name),
+                        ),
+                        child: Container(
+                          width: 120,
+                          margin: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Center(child: Text(b.name)),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+              SliverPadding(
+                padding: const EdgeInsets.all(16),
+                sliver: SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 0.65,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (_, i) {
+                      final product = filtered[i];
+                      final bool isFavorite = wishlistController.items.any(
+                        (e) => e.id == product.id,
+                      );
+                      return ProductCard(
+                        product: product,
+                        isFavorite: isFavorite,
+                        onToggleFavorite: () {
+                          wishlistController.toggle(product);
+                          navigationController.setIndex(2);
+                        },
+                        onAddToCart: () {
+                          cartController.addItem(
+                            CartItemModel(
+                              productId: product.id,
+                              name: product.name,
+                              price: product.price,
+                            ),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Đã thêm ${product.name} vào giỏ hàng'),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    childCount: filtered.length,
+                  ),
+                ),
+              ),
             ],
-          ),
-        );
-      }, childCount: 6),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 20,
-        crossAxisSpacing: 20,
-        mainAxisExtent: 280,
+          );
+        },
       ),
-    ),
-  );
-}
-}
-
-/// ===== STICKY HEADER =====
-class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
-final double minHeight;
-final double maxHeight;
-final Widget child;
-
-_SliverAppBarDelegate({
-  required this.minHeight,
-  required this.maxHeight,
-  required this.child,
-});
-
-@override
-double get minExtent => minHeight;
-
-@override
-double get maxExtent => maxHeight;
-
-@override
-Widget build(context, shrinkOffset, overlapsContent) {
-  return SizedBox.expand(child: child);
-}
-
-@override
-bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
-  return true;
-}
+    );
+  }
 }

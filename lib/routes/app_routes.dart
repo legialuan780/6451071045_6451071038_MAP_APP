@@ -1,4 +1,20 @@
+import 'package:btth/screens/auth/forget_password_screen.dart';
+import 'package:btth/screens/auth/login_screen.dart';
+import 'package:btth/screens/auth/register_screen.dart';
+import 'package:btth/screens/auth/register_success_screen.dart';
+import 'package:btth/screens/auth/reset_email_sent_screen.dart';
+import 'package:btth/screens/auth/verify_email_screen.dart';
+import 'package:btth/screens/cart_overview_screen.dart';
 import 'package:btth/screens/onboarding/onboarding_screen.dart';
+import 'package:btth/screens/order/my_order_screen.dart';
+import 'package:btth/screens/order/order_overview_screen.dart';
+import 'package:btth/screens/profile/change_dateofbirth_screen.dart';
+import 'package:btth/screens/profile/change_email_screen.dart';
+import 'package:btth/screens/profile/change_gender_screen.dart';
+import 'package:btth/screens/profile/change_name_screen.dart';
+import 'package:btth/screens/profile/change_phonenumber_screen.dart';
+import 'package:btth/screens/profile/change_username_screen.dart';
+import 'package:btth/screens/profile/update_account_screen.dart';
 import 'package:flutter/material.dart';
 import '../screens/home/main_navigation_screen.dart';
 import '../screens/splash/splash_screen.dart';
@@ -34,5 +50,27 @@ class AppRoutes {
     splash: (context) => const SplashScreen(),
     onboarding: (context) => const OnboardingScreen(),
     home: (context) => const MainNavigationScreen(),
+    register: (context) => const RegisterScreen(),
+    login: (context) => const LoginScreen(),
+    forgetPassword: (context) => ForgetPasswordScreen(),
+    verifyEmail: (context) {
+      final String email = ModalRoute.of(context)!.settings.arguments as String;
+      return VerifyEmailScreen(email: email);
+    },
+    registerSuccess: (context) => const RegisterSuccessScreen(),
+    resetEmailSent: (context) {
+      final String email = ModalRoute.of(context)!.settings.arguments as String;
+      return ResetEmailSentScreen(email: email);
+    },
+    updateAccount: (context) => const UpdateAccountScreen(),
+    changeName: (context) => const ChangeNameScreen(),
+    changeUsername: (context) => const ChangeUsernameScreen(),
+    changeEmail: (context) => const ChangeEmailScreen(),
+    changePhoneNumber: (context) => const ChangePhoneNumberScreen(),
+    changeGender: (context) => const ChangeGenderScreen(),
+    changeDateofBirth: (context) => const ChangeDateOfBirthScreen(),
+    cartOverview: (context) => const CartOverviewScreen(),
+    orderOverview: (context) => const OrderOverviewScreen(),
+    myOrderview: (context) => const MyOrderScreen(),
   };
 }
