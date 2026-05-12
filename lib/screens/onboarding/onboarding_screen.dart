@@ -57,10 +57,10 @@ padding: const EdgeInsets.all(24),
 child: Column(
 mainAxisAlignment: MainAxisAlignment.center,
 children: [
-Image.asset(
-page.imagePath,
-height: 220,
-fit: BoxFit.contain,
+SizedBox(
+  width: double.infinity,
+  height: 220,
+  child: _OnboardingIllustration(source: page.imagePath),
 ),
 const SizedBox(height: 32),
 Text(
@@ -110,4 +110,56 @@ fontWeight: FontWeight.bold,
 
   const SizedBox(height: 32),
 ],
-),),);}}
+),),);
+}
+}
+
+class _OnboardingIllustration extends StatelessWidget {
+  const _OnboardingIllustration({required this.source});
+
+  final String source;
+
+  bool get _isNetwork =>
+      source.startsWith('http://') || source.startsWith('https://');
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isNetwork) {
+      return Image.network(
+        source,
+        fit: BoxFit.contain,
+        gaplessPlayback: true,
+        loadingBuilder: (context, child, progress) {
+          if (progress == null) return child;
+          return Center(
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              value: progress.expectedTotalBytes != null
+                  ? progress.cumulativeBytesLoaded /
+                      progress.expectedTotalBytes!
+                  : null,
+            ),
+          );
+        },
+        errorBuilder: (context, error, stackTrace) => Center(
+          child: Icon(
+            Icons.broken_image_outlined,
+            size: 48,
+            color: Colors.grey.shade500,
+          ),
+        ),
+      );
+    }
+    return Image.asset(
+      source,
+      fit: BoxFit.contain,
+      errorBuilder: (context, error, stackTrace) => Center(
+        child: Icon(
+          Icons.broken_image_outlined,
+          size: 48,
+          color: Colors.grey.shade500,
+        ),
+      ),
+    );
+  }
+}
